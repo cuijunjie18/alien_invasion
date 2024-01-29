@@ -20,9 +20,12 @@ class Settings:
 
         #外星人设置
         self.alien_drop_speed = 10
+        self.alien_direction = ['-1','1']
 
         #动态设置
         self.speedup_scale = 1.1
+        self.speeddown_scale = 1.1
+        self.number_scale = 3
         self.score_scale = 1.5
         self.initialize_dynamic_settings()
 
@@ -31,13 +34,18 @@ class Settings:
         #速度相关
         self.ship_speed = 10.0
         self.bullet_speed = 12.0
-        self.alien_speed = 1.0
+        self.alien_speed_x = 1.0
+        self.alien_speed_y = 1.0
         #方向相关
         self.alien_direction = 1
         #得分相关
         self.alien_score = 50
+        #对应关卡3外星人数量
+        self.alien_number_limit = 10
 
-    def increase_speed(self):
+    def increase_level(self):
         """提高游戏速度设置的值"""
-        self.alien_speed *= self.speedup_scale
+        self.alien_speed_x *= self.speedup_scale
+        self.alien_speed_y *= self.speeddown_scale
+        self.alien_number_limit += self.number_scale
         self.alien_score = int(self.score_scale*self.alien_score)

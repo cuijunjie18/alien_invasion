@@ -1,3 +1,6 @@
-import pygame
-import sys
-screen = pygame.display.set_mode((1100,700))
+def test(a):
+    a += 2
+
+a = 3
+test(a)
+print(a)

@@ -1,4 +1,5 @@
 import pygame
+from random import choice
 from pygame.sprite import Sprite
 class Alien(Sprite):
     """管理外星人的类"""
@@ -22,14 +23,22 @@ class Alien(Sprite):
         self.rect.x = self.rect.width
         self.rect.y = self.rect.height
 
+        #外星人运动方向
+        #Bug
+        self.number = ['-1','1']
+        self.direction = int(choice(self.number))
+
         #存储外星人精确的水平位置
         self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
 
     def update(self):
         """移动外星人"""
         #注意x与rect.x的区别
-        self.x += self.settings.alien_speed*self.settings.alien_direction
+        self.x += self.settings.alien_speed_x*self.direction
+        self.y += self.settings.alien_speed_y
         self.rect.x = self.x
+        self.rect.y = self.y
 
     def check_edge(self):
         """检查外星人是否到达左右边界"""

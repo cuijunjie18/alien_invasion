@@ -2,6 +2,7 @@
 import pygame
 import sys
 import json
+import random
 from time import sleep
 #导入游戏对象
 from ship import Ship
@@ -33,8 +34,10 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
-        #self.before = 0
-        self.create_fleet()
+        #self.before_bullet = 0
+        self.before_alien = 1100
+        self.alien_number = 0
+        self.alien_kill = 0
 
         #创建统计信息
         self.stats = GameStats(self)
@@ -51,6 +54,7 @@ class AlienInvasion:
         while True:
             self._check_event()
             if self.game_active:
+                self._create_alien()
                 self.ship.update()
                 self ._update_bullets()
                 self._update_aliens()
@@ -130,17 +134,18 @@ class AlienInvasion:
         if collisions:
             for value in collisions.values():
                 self.stats.score += len(value)*self.settings.alien_score
+                self.alien_kill += len(value)
             self.sb.prep_score()
             self._check_high_score()
-        if not self.aliens:
+        if  self.alien_kill == self.settings.alien_number_limit:
             #提高游戏难度
-            self.settings.increase_speed()
+            self.settings.increase_level()
             self.stats.level += 1
             self.sb.prep_level()
             #清空全部子弹
             self.bullets.empty()
-            #创建新的舰队
-            self.create_fleet()
+            #进入新关卡
+            self._new_level()
     
     def _check_high_score(self):
         """检查最高分是否被打破"""
@@ -150,35 +155,23 @@ class AlienInvasion:
             self.stats.path.write_text(temp)
             self.sb.prep_high_score()
 
-    def _create_alien(self,current_x,current_y):
+    def _create_alien(self):
         """创建单个外星人"""
-        new_alien = Alien(self)
-        #这里要特殊处理alien.x!!!!
-        new_alien.x = current_x
-        new_alien.rect.x = current_x
-        new_alien.rect.y = current_y
-        self.aliens.add(new_alien)
-
-    def create_fleet(self):
-        """创建外星人舰队"""
-        #创建单个外星人再不断添加进舰队
-        #每个外星人的间距为外星人的宽与高
-        alien = Alien(self)
-        alien_width,alien_height = alien.rect.size
-        current_x,current_y = alien_width,alien_height
-        while current_y < (self.settings.screen_height - 5*alien_height):
-            while current_x < (self.settings.screen_width - 2*alien_width):
-                self._create_alien(current_x,current_y)
-                current_x += 2*alien_width
-            
-            #添加一行外星人后,重置x值并递增y值
-            current_x = alien_width
-            current_y += 2*alien_height 
+        if self.before_alien >= 100 and self.alien_number < self.settings.alien_number_limit:
+            self.alien_number += 1
+            new_alien = Alien(self)
+            #这里要特殊处理alien.x!!!!
+            new_alien.x = random.randint(0,self.settings.screen_width - new_alien.rect.width)
+            new_alien.rect.x = new_alien.x
+            self.before_alien = new_alien.rect.y
+            self.aliens.add(new_alien)
 
     def _update_aliens(self):
         """更新外星人"""
         self._check_fleet_edge()
         self.aliens.update()
+        #更新最后生成的外星人的高度
+        self.before_alien += self.settings.alien_speed_y
         #检测外星人与飞船的碰撞
         if pygame.sprite.spritecollideany(self.ship,self.aliens):
             self._ship_hit()
@@ -192,14 +185,12 @@ class AlienInvasion:
         """在有外星人到达边界时做出反应"""
         for alien in self.aliens.sprites():
             if alien.check_edge():
-                self._change_fleet_direction()
-                break
+                self._change_fleet_direction(alien)
+                
     
-    def _change_fleet_direction(self):
-        """改变外星人的移动方向并将整个舰队向下移动"""
-        for alien in self.aliens.sprites():
-            alien.rect.y += self.settings.alien_drop_speed
-        self.settings.alien_direction *= -1
+    def _change_fleet_direction(self,alien):
+        """改变外星人的移动方向"""
+        alien.direction *= -1
 
     def _ship_hit(self):
         """响应飞船与外星人的碰撞"""
@@ -214,8 +205,8 @@ class AlienInvasion:
             self.ship.center_ship_place()
             #视觉暂停
             sleep(0.5)
-            #创建新的舰队
-            self.create_fleet()
+            #重新开始当前等级的关卡
+            self._new_level()
         else:
             self._end_game()
     
@@ -230,8 +221,8 @@ class AlienInvasion:
         #清空当前屏幕上物品
         self.aliens.empty()
         self.bullets.empty()
-        #创建一个新的外星人舰队,并重置飞船位置
-        self.create_fleet()
+        #重置飞船位置
+        self._new_level()
         self.ship.center_ship_place()
         #隐藏光标
         pygame.mouse.set_visible(False)
@@ -240,6 +231,11 @@ class AlienInvasion:
         """结束游戏"""
         self.game_active = False
         pygame.mouse.set_visible(True)
+
+    def _new_level(self):
+        """进入新关卡或重新当前关卡"""
+        self.alien_kill = 0
+        self.alien_number = 0
 
     def _update_screen(self):
         """更新屏幕"""
