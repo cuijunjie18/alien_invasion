@@ -13,7 +13,7 @@ class Settings:
         self.ship_limit = 3
 
         #子弹设置
-        self.bullet_width = 1000
+        self.bullet_width = 3
         self.bullet_height = 15
         self.bullet_color = (60,60,60)
         self.bullet_allow = 12
@@ -31,7 +31,7 @@ class Settings:
         #速度相关
         self.ship_speed = 10.0
         self.bullet_speed = 12.0
-        self.alien_speed = 100.0
+        self.alien_speed = 1.0
         #方向相关
         self.alien_direction = 1
         #得分相关

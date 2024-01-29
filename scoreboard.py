@@ -16,16 +16,14 @@ class Scoreboard:
         self.text_color = (30,30,30)
         self.font = pygame.font.SysFont(None,28)
 
-        #加载初始得分的图像
+        #加载图像
+        self.prep_image()
+    
+    def prep_image(self):
+        """加载文本图像"""
         self.prep_score()
-        
-        #加载最高分的图像
         self.prep_high_score()
-
-        #加载当前游戏等级
         self.prep_level()
-
-        #加载剩余飞船
         self.prep_ships()
 
     def prep_score(self):

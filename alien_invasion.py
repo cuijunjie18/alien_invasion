@@ -1,6 +1,7 @@
 #导入必要模块
 import pygame
 import sys
+import json
 from time import sleep
 #导入游戏对象
 from ship import Ship
@@ -145,6 +146,8 @@ class AlienInvasion:
         """检查最高分是否被打破"""
         if self.stats.score > self.stats.high_score:
             self.stats.high_score = self.stats.score
+            temp = json.dumps(self.stats.high_score)
+            self.stats.path.write_text(temp)
             self.sb.prep_high_score()
 
     def _create_alien(self,current_x,current_y):
@@ -220,9 +223,7 @@ class AlienInvasion:
         """重置游戏并开始"""
         #重置游戏的统计信息
         self.stats.reset_stats()
-        self.sb.prep_score()
-        self.sb.prep_ships()
-        self.sb.prep_level()
+        self.sb.prep_image()
         self.game_active = True
         #还原游戏设置
         self.settings.initialize_dynamic_settings()
