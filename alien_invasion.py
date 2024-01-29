@@ -211,6 +211,8 @@ class AlienInvasion:
             self.ship.center_ship_place()
             #视觉暂停
             sleep(0.5)
+            #创建新的舰队
+            self.create_fleet()
         else:
             self._end_game()
     
@@ -218,6 +220,9 @@ class AlienInvasion:
         """重置游戏并开始"""
         #重置游戏的统计信息
         self.stats.reset_stats()
+        self.sb.prep_score()
+        self.sb.prep_ships()
+        self.sb.prep_level()
         self.game_active = True
         #还原游戏设置
         self.settings.initialize_dynamic_settings()

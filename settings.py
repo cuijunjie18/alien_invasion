@@ -31,7 +31,7 @@ class Settings:
         #速度相关
         self.ship_speed = 10.0
         self.bullet_speed = 12.0
-        self.alien_speed = 1.0
+        self.alien_speed = 100.0
         #方向相关
         self.alien_direction = 1
         #得分相关
