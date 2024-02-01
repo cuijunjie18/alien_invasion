@@ -34,7 +34,7 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
-        #self.before_bullet = 0
+        self.before = 0
         self.before_alien = 1100
         self.alien_number = 0
         self.alien_kill = 0
@@ -110,17 +110,17 @@ class AlienInvasion:
         #如果还未超过屏幕的限制
         if len(self.bullets) < self.settings.bullet_allow:
             new_bullet = Bullet(self)
-            #self.before = new_bullet.rect.y
+            self.before = new_bullet.rect.y
             self.bullets.add(new_bullet)
     
     def _update_bullets(self):
         """操作屏幕上的子弹"""
         #更新所有已发射子弹的位置
         self.bullets.update()
-        #self.before -= self.settings.bullet_speed
+        self.before -= self.settings.bullet_speed
         #无限火力
-        #if self.before <= 600:
-            #self._fire_bullet()
+        if self.before <= 600:
+            self._fire_bullet()
         #删除已经失效的子弹
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
